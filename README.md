@@ -68,10 +68,7 @@ JOIN Author a ON ba.AuthorID = a.AuthorID;
 
 ---
 
-## 📎 Files Included
-- `library_schema.dbml` – ER diagram file (import into [dbdiagram.io](https://dbdiagram.io))
-- `library.sql` – SQL script (if needed separately)
-- `README.md` – Project overview and documentation
+
 
 ---
 
