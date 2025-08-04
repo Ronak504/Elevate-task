@@ -14,6 +14,20 @@ CREATE TABLE Book (
     CategoryID INT,
     FOREIGN KEY (CategoryID) REFERENCES Category(id)
 );
+CREATE TABLE Author (
+    AuthorID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Bio TEXT
+);
+
+
+CREATE TABLE BookAuthor (
+    BookID INT,
+    AuthorID INT,
+    PRIMARY KEY (BookID, AuthorID),
+    FOREIGN KEY (BookID) REFERENCES Book(BookID),
+    FOREIGN KEY (AuthorID) REFERENCES Author(AuthorID)
+);
 
 CREATE TABLE Member (
     MemberID INT PRIMARY KEY,
@@ -50,6 +64,29 @@ INSERT INTO Book (BookID,Title, Author, CategoryID) VALUES
 (101,'Steve Jobs', 'Walter Isaacson', 5);
 SELECT * FROM Book;
 
+INSERT INTO Author (AuthorID, Name, Bio) VALUES
+(501, 'Frank Herbert', 'Author of the Dune series, known for science fiction.'),
+(502, 'Yuval Noah Harari', 'Historian and author of Sapiens and Homo Deus.'),
+(503, 'Eric Matthes', 'Python educator and author of Python Crash Course.'),
+(504, 'Marcus Aurelius', 'Roman emperor and Stoic philosopher.'),
+(505, 'Walter Isaacson', 'Biographer of Steve Jobs and other innovators.'),
+(506, 'George Orwell', 'Author of 1984 and Animal Farm.'),
+(507, 'Robert C. Martin', 'Known for Clean Code and software engineering principles.');
+
+SELECT * FROM Author;
+
+INSERT INTO BookAuthor (BookID, AuthorID) VALUES
+(103, 501), 
+(104, 502),  
+(102, 503),  
+(107, 504),  
+(101, 505),  
+(103, 506), 
+(101, 507);  
+
+SELECT * FROM BookAuthor;
+
+
 INSERT INTO Member (MemberID, Name, Email, Phone, Address) VALUES
 (201, 'Arjun Mehta', 'arjun@gmail.com', '9876543210', '45 MG Road, Delhi'),
 (202, 'Priya Nair', 'priya@outlook.com', '9123456789', '22 Indiranagar, Bangalore'),
@@ -66,4 +103,17 @@ INSERT INTO Loan (LoanID, BookID, MemberID, LoanDate, DueDate, ReturnDate) VALUE
 (306, 103, 201, '2025-08-04', '2025-08-10', NULL),
 (307, 107, 202, '2025-08-05', '2025-08-12', NULL);
 
-SELECT * FROM Loan;
+SELECT 
+    l.LoanID,
+    m.Name AS Member,
+    b.Title AS Book,
+    a.Name AS Author,
+    l.LoanDate,
+    l.DueDate,
+    l.ReturnDate
+FROM Loan l
+JOIN Member m ON l.MemberID = m.MemberID
+JOIN Book b ON l.BookID = b.BookID
+JOIN BookAuthor ba ON b.BookID = ba.BookID
+JOIN Author a ON ba.AuthorID = a.AuthorID;
+
