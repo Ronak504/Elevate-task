@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS LIBRARY;
 CREATE DATABASE LIBRARY;
 USE LIBRARY;
@@ -49,7 +48,7 @@ CREATE TABLE Loan (
     FOREIGN KEY (MemberID) REFERENCES Member(MemberID)
 );
 
-INSERT INTO Category (ID,name) VALUES
+INSERT INTO Category (ID, name) VALUES
 (1,'Science Fiction'),
 (2,'History'),
 (3,'Programming'),
@@ -72,7 +71,6 @@ INSERT INTO Author (AuthorID, Name, Bio) VALUES
 (506, 'George Orwell', 'Author of 1984 and Animal Farm.'),
 (507, 'Robert C. Martin', 'Known for Clean Code and software engineering principles.');
 
-
 INSERT INTO BookAuthor (BookID, AuthorID) VALUES
 (103, 501), 
 (104, 502),  
@@ -87,11 +85,8 @@ INSERT INTO Member (MemberID, Name, Email, Phone, Address) VALUES
 (202, 'Priya Nair', 'priya@outlook.com', '9123456789', '22 Indiranagar, Bangalore'),
 (203, 'Ravi Kumar', 'ravi.k@domain.com', '9988776655', '78 Ashok Nagar, Hyderabad'),
 (204, 'Neha Sharma', 'neha.sharma@abc.com', '7894561230', '9 Banjara Hills, Hyderabad'),
-(205, 'Karan Patel', 'karan.p@gmail.com', '9001122334', '101 CG Road, Ahmedabad');
-
-
-INSERT INTO Member (MemberID, Name, Email, Address)
-VALUES (206, 'Meena Gupta', 'meena@gmail.com', '50 RK Puram, Delhi');
+(205, 'Karan Patel', 'karan.p@gmail.com', '9001122334', '101 CG Road, Ahmedabad'),
+(206, 'Meena Gupta', 'meena@gmail.com', '9012345678', '50 RK Puram, Delhi');
 
 INSERT INTO Loan (LoanID, BookID, MemberID, LoanDate, DueDate, ReturnDate) VALUES
 (301, 101, 202, '2025-08-01', '2025-08-08', '2025-08-06'),
@@ -114,15 +109,41 @@ WHERE LoanID = 305;
 DELETE FROM Loan
 WHERE LoanID = 307;
 
-DELETE FROM Member
-WHERE MemberID = 207; 
+SELECT *
+FROM Member
+WHERE Address LIKE '%Delhi%' AND Name LIKE 'A%'
+ORDER BY Name;
 
-SELECT * FROM Loan
+SELECT *
+FROM Loan
+ORDER BY LoanID DESC
+LIMIT 3;
+
+
+SELECT COUNT(*) AS BooksCurrentlyLoaned
+FROM Loan
 WHERE ReturnDate IS NULL;
 
-SELECT * FROM Loan
-WHERE ReturnDate IS NOT NULL;
 
+SELECT AVG(DATEDIFF(DueDate, LoanDate)) AS AvgLoanDuration
+FROM Loan;
+
+SELECT *
+FROM Loan
+WHERE ReturnDate IS NOT NULL
+ORDER BY ReturnDate DESC;
+
+SELECT c.name AS Category, COUNT(*) AS BookCount
+FROM Book b
+JOIN Category c ON b.CategoryID = c.id
+GROUP BY c.name;
+
+
+SELECT c.name AS Category, COUNT(*) AS BookCount
+FROM Book b
+JOIN Category c ON b.CategoryID = c.id
+GROUP BY c.name
+HAVING COUNT(*) > 1;
 
 SELECT 
     l.LoanID,
@@ -136,4 +157,6 @@ FROM Loan l
 JOIN Member m ON l.MemberID = m.MemberID
 JOIN Book b ON l.BookID = b.BookID
 JOIN BookAuthor ba ON b.BookID = ba.BookID
-JOIN Author a ON ba.AuthorID = a.AuthorID;
+JOIN Author a ON ba.AuthorID = a.AuthorID
+ORDER BY l.LoanDate DESC
+LIMIT 10;
