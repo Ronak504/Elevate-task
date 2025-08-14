@@ -1,0 +1,66 @@
+DROP DATABASE IF EXISTS JoinExample2;
+CREATE DATABASE JoinExample2;
+USE JoinExample2;
+
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    Country VARCHAR(50)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    OrderDate DATE,
+    CustomerID INT,
+    Amount DECIMAL(10,2),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+INSERT INTO Customers (CustomerID, CustomerName, Country) VALUES
+(1, 'Alice', 'USA'),
+(2, 'Bob', 'UK'),
+(3, 'Charlie', 'Canada'),
+(4, 'David', 'USA');
+
+INSERT INTO Orders (OrderID, OrderDate, CustomerID, Amount) VALUES
+(101, '2025-08-01', 1, 250.00),
+(102, '2025-08-02', 2, 150.00),
+(103, '2025-08-03', 1, 300.00),
+(104, '2025-08-04', 3, 200.00),
+(105, '2025-08-05', NULL, 500.00);
+
+CREATE VIEW CustomerTotalAmount AS
+SELECT 
+    C.CustomerID,
+    C.CustomerName,
+    SUM(O.Amount) AS TotalAmount
+FROM Customers C
+LEFT JOIN Orders O ON C.CustomerID = O.CustomerID
+GROUP BY C.CustomerID, C.CustomerName;
+
+CREATE VIEW ActiveCustomers AS
+SELECT DISTINCT C.CustomerID, C.CustomerName
+FROM Customers C
+JOIN Orders O ON C.CustomerID = O.CustomerID;
+
+CREATE VIEW OrdersAboveCustomerAverage AS
+SELECT O.CustomerID, O.OrderID, O.Amount
+FROM Orders O
+WHERE O.Amount > (
+    SELECT AVG(O2.Amount)
+    FROM Orders O2
+    WHERE O2.CustomerID = O.CustomerID
+);
+
+CREATE VIEW HighAvgOrderCustomers AS
+SELECT C.CustomerID, C.CustomerName, AVG(O.Amount) AS AvgOrderAmount
+FROM Customers C
+JOIN Orders O ON C.CustomerID = O.CustomerID
+GROUP BY C.CustomerID, C.CustomerName
+HAVING AVG(O.Amount) > 200;
+
+SELECT * FROM CustomerTotalAmount;
+SELECT * FROM ActiveCustomers;
+SELECT * FROM OrdersAboveCustomerAverage;
+SELECT * FROM HighAvgOrderCustomers;
+SELECT CustomerName, TotalAmount FROM CustomerTotalAmount;
